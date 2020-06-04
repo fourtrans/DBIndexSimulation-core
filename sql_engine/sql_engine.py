@@ -80,7 +80,6 @@ class SqlEngine(object):
             return t
 
         def t_error(t):
-            print(t)
             raise SqlSyntaxException('lexical anayasis failed at:(%s)' % t.value)
 
         return lex.lex()
