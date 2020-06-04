@@ -50,7 +50,7 @@ class SqlEngine(object):
         }
 
         # define tokens
-        tokens = ['STR', 'NUMBER', 'BOOL', 'KEYWORD'] + list(reserved.values())  # 'KEYWROD' only for lexical analysis
+        tokens = ['STR', 'NUMBER', 'BOOL', 'KEYWORD'] + list(reserved.values())  # 'KEYWORD' only for lexical analysis
 
         # define ignore
         t_ignore = r' '
