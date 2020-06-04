@@ -9,7 +9,7 @@ class NotUniqueException(Exception):
 
 
 class StorageCoordinator(object):
-    def __init__(self, table: DataTable, table_definition: dict):  # NOTE: suggestion -- table's type to be List[list]
+    def __init__(self, table: List[tuple], table_definition: dict):
         pass
 
     def insert(self, record: tuple) -> None:
