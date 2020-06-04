@@ -1,1 +1,1 @@
-from .storage_coordinator import StorageCoordinator
+from .storage_coordinator import StorageCoordinator, NotUniqueException

@@ -20,7 +20,7 @@ class ValueInvalidException(Exception):
 
 
 class SqlEngine(object):
-    def __init__(self, table_definition: List[dict]):
+    def __init__(self, table_definition: dict):
         pass
 
     def resolve_sql_expr(self, sql_expr: str) -> List[Code]:
