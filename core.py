@@ -2,7 +2,7 @@ from typing import List, Dict, Tuple, Set
 from functools import reduce
 from .sql_engine import SqlEngine, Code
 from .sql_engine import SqlSyntaxException, SqlColumnException, ValueInvalidException
-from .data_storage import StorageCoordinator, NotUniqueException
+from .data_storage import StorageCoordinator
 from .data_storage import NotUniqueException
 
 

@@ -27,33 +27,59 @@ class SqlEngine(object):
         pass
 
     def gen_lex(self):
-        # Regular expression rules for simple tokens
-        t_SELECT = r'[Ss][Ee][Ll][Ee][Cc][Tt]'
-        t_INSERT = r'[Ii][Nn][Ss][Ee][Rr][Tt]'
-        t_DELETE = r'[Dd][Ee][Ll][Ee][Tt][Ee]'
-        t_UPDATE = r'[Uu][Pp][Dd][Aa][Tt][Ee]'
-        t_SET = r'[Ss][Ee][Tt]'
-        t_WHERE = r'[Ww][Hh][Ee][Rr][Ee]'
-        t_VALUES = r'[Vv][Aa][Ll][Uu][Ee][Ss]'
-        t_STAR = r'\*'
-        t_EQ = r'\='
-        t_LT = r'\<'
-        t_LE = r'\<\='
-        t_GT = r'\>'
-        t_GE = r'\>\='
-        t_NE = r'\<\>'
-        t_LIKE = r'[Li][Ii][Kk][Ee]'
-        t_COMMA = r','
-        t_STR = r'\'[^\']+\'|[^\']+'
+        # reserved keyword or operator
+        reserved = {
+            'select': 'SELECT',
+            'insert': 'INSERT',
+            'delete': 'DELETE',
+            'update': 'UPDATE',
+            'set': 'SET',
+            'where': 'WHERE',
+            'values': 'VALUES',
+            '*': 'STAR',
+            '=': 'EQ',
+            '<': 'LT',
+            '<=': 'LE',
+            '>': 'GT',
+            '>=': 'GE',
+            '<>': 'NE',
+            'like': 'LIKE',
+            ',': 'COMMA',
+            'and': 'AND',
+            'or': 'OR'
+        }
+
+        # define tokens
+        tokens = ['STR', 'NUMBER', 'BOOL', 'KEYWORD'] + list(reserved.values())  # 'KEYWORD' only for lexical analysis
+
+        # define ignore
+        t_ignore = r' '
+
+        # # Regular expression rules for simple tokens
+        # t_STR = r"(?<=')[^']+(?=')|[^\s']+"
 
         def t_NUMBER(t):
             r'\d+\.?|\.\d+|\d+\.\d+'
-            t.value = float(t) if '.' in t else int(t)
+            t.value = float(t.value) if '.' in t.value else int(t.value)
             return t
 
         def t_BOOL(t):
             r'[Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee]'
             t.value = bool(re.match(r'[Tt][Rr][Uu][Ee]', t))
             return t
+
+        def t_KEYWORD(t):
+            r'[a-zA-Z]+|\=|\>\=|\<\=|\<\>|\<|\>|\*|,'
+            t.type = reserved.get(t.value.lower(), 'STR')
+            return t
+
+        def t_STR(t):
+            r"'[^']*'|[^\s']+"
+            if t.value[0] == "'" and t.value[-1] == "'":  # remove STR's quotation marks
+                t.value = t.value[1:-1]
+            return t
+
+        def t_error(t):
+            raise SqlSyntaxException('lexical anayasis failed at:(%s)' % t.value)
 
         return lex.lex()
