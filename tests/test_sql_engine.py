@@ -11,7 +11,7 @@ class Test_SqlEngine_lex(unittest.TestCase):
     @classmethod
     def setUpClass(self) -> None:
         self.engine = SqlEngine({})
-        self.lexer = self.engine.gen_lex()
+        self.lexer, _ = self.engine.gen_lex()
 
     def test_gen_lexer_sample1(self):
 
@@ -55,6 +55,23 @@ class Test_SqlEngine_lex(unittest.TestCase):
             self.assertEqual(self.lexer.token().type, sample_toktype[i])
 
     pass
+
+
+class Test_SqlEngine_yacc(unittest.TestCase):
+    @classmethod
+    def setUpClass(self) -> None:
+        self.engine = SqlEngine({})
+        self.lexer, self.tokens = self.engine.gen_lex()
+        self.parser = self.engine.gen_yacc(self.lexer, self.tokens)
+
+    def test_gen_yacc_sample1(self):
+        sample = "SELECT * WHERE Sno > 1 and name ='JackSon Li' Or cno <> 3 and name <> ''"
+        sample_toktype = ['SELECT', 'STAR', 'WHERE', 'STR', 'GT', 'NUMBER', 'AND', 'STR', 'EQ', 'STR', 'OR', 'STR',
+                          'NE', 'NUMBER', 'AND', 'STR', 'NE', 'STR']
+        # self.lexer.input(sample)
+        # for i in range(len(sample_toktype)):
+        #     self.assertEqual(self.lexer.token().type, sample_toktype[i])
+        self.parser.parse(input=sample, lexer=self.lexer)
 
 
 if __name__ == '__main__':
