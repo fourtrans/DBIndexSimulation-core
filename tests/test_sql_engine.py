@@ -73,6 +73,13 @@ class Test_SqlEngine_yacc(unittest.TestCase):
         #     self.assertEqual(self.lexer.token().type, sample_toktype[i])
         self.parser.parse(input=sample, lexer=self.lexer)
 
+    def test_gen_yacc_sample2(self):
+        sample = "SELECT * WHERE Sno > 1 OR name ='JackSon Li' and cno <> 3 and name <> ''"
+        self.parser.parse(input=sample, lexer=self.lexer)
+
+    def test_gen_yacc_sample3(self):
+        sample = "SELECT * WHERE Sno > 1 and name ='JackSon Li' and cno <> 3 OR name <> ''"
+        self.parser.parse(input=sample, lexer=self.lexer)
 
 if __name__ == '__main__':
     unittest.main()

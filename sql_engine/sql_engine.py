@@ -138,13 +138,13 @@ class SqlEngine(object):
             print('生成条件表达式')
 
         def p_or_cond(p):
-            '''or_cond : or_cond OR and_cond
-                       | cond'''
+            '''or_cond : and_cond OR or_cond
+                       | and_cond'''
             # TODO 生成含或项的复合逻辑表达式
             print('生成含或项的复合逻辑表达式')
 
         def p_and_cond(p):
-            '''and_cond : and_cond AND cond
+            '''and_cond : cond AND and_cond
                         | cond'''
             # TODO 生成含与项的复合逻辑表达式
             print('生成含与项的复合逻辑表达式')
@@ -153,6 +153,7 @@ class SqlEngine(object):
             '''cond : STR pred value'''
             # TODO 生成元逻辑表达式
             print('生成元逻辑表达式')
+            p[0] = 'cond test'
 
         def p_pred(p):
             '''pred : EQ
