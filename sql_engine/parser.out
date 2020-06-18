@@ -26,7 +26,7 @@ Rule 16    or_cond -> and_cond OR or_cond
 Rule 17    or_cond -> and_cond
 Rule 18    and_cond -> cond AND and_cond
 Rule 19    and_cond -> cond
-Rule 20    cond -> STR pred value
+Rule 20    cond -> attr pred value
 Rule 21    pred -> EQ
 Rule 22    pred -> NE
 Rule 23    pred -> LT
@@ -41,7 +41,7 @@ Rule 31    value -> NUMBER
 Rule 32    value -> BOOL
 Rule 33    assg_stam -> assg COMMA assg_stam
 Rule 34    assg_stam -> assg
-Rule 35    assg -> STR EQ value
+Rule 35    assg -> attr EQ value
 Rule 36    empty -> <empty>
 
 Terminals, with rules where they appear
@@ -64,7 +64,7 @@ OR                   : 16
 SELECT               : 5
 SET                  : 7
 STAR                 : 11
-STR                  : 13 20 30 35
+STR                  : 13 30
 UPDATE               : 7
 VALUES               : 6
 WHERE                : 14
@@ -75,7 +75,7 @@ Nonterminals, with rules where they appear
 and_cond             : 16 17 18
 assg                 : 33 34
 assg_stam            : 7 33
-attr                 : 9 10
+attr                 : 9 10 20 35
 attr_list            : 5 6 9
 cond                 : 18 19
 cond_stam            : 5 7 8
@@ -256,6 +256,13 @@ state 14
     WHERE           reduce using rule 13 (attr -> STR .)
     $end            reduce using rule 13 (attr -> STR .)
     VALUES          reduce using rule 13 (attr -> STR .)
+    EQ              reduce using rule 13 (attr -> STR .)
+    NE              reduce using rule 13 (attr -> STR .)
+    LT              reduce using rule 13 (attr -> STR .)
+    LE              reduce using rule 13 (attr -> STR .)
+    GT              reduce using rule 13 (attr -> STR .)
+    GE              reduce using rule 13 (attr -> STR .)
+    LIKE            reduce using rule 13 (attr -> STR .)
 
 
 state 15
@@ -270,12 +277,14 @@ state 16
     (7) update_stam -> UPDATE SET . assg_stam cond_stam
     (33) assg_stam -> . assg COMMA assg_stam
     (34) assg_stam -> . assg
-    (35) assg -> . STR EQ value
+    (35) assg -> . attr EQ value
+    (13) attr -> . STR
 
-    STR             shift and go to state 25
+    STR             shift and go to state 14
 
     assg_stam                      shift and go to state 23
     assg                           shift and go to state 24
+    attr                           shift and go to state 25
 
 state 17
 
@@ -291,13 +300,15 @@ state 18
     (17) or_cond -> . and_cond
     (18) and_cond -> . cond AND and_cond
     (19) and_cond -> . cond
-    (20) cond -> . STR pred value
+    (20) cond -> . attr pred value
+    (13) attr -> . STR
 
-    STR             shift and go to state 29
+    STR             shift and go to state 14
 
     or_cond                        shift and go to state 26
     and_cond                       shift and go to state 27
     cond                           shift and go to state 28
+    attr                           shift and go to state 29
 
 state 19
 
@@ -374,7 +385,7 @@ state 24
 
 state 25
 
-    (35) assg -> STR . EQ value
+    (35) assg -> attr . EQ value
 
     EQ              shift and go to state 38
 
@@ -407,7 +418,7 @@ state 28
 
 state 29
 
-    (20) cond -> STR . pred value
+    (20) cond -> attr . pred value
     (21) pred -> . EQ
     (22) pred -> . NE
     (23) pred -> . LT
@@ -496,16 +507,18 @@ state 37
     (33) assg_stam -> assg COMMA . assg_stam
     (33) assg_stam -> . assg COMMA assg_stam
     (34) assg_stam -> . assg
-    (35) assg -> . STR EQ value
+    (35) assg -> . attr EQ value
+    (13) attr -> . STR
 
-    STR             shift and go to state 25
+    STR             shift and go to state 14
 
     assg                           shift and go to state 24
     assg_stam                      shift and go to state 50
+    attr                           shift and go to state 25
 
 state 38
 
-    (35) assg -> STR EQ . value
+    (35) assg -> attr EQ . value
     (30) value -> . STR
     (31) value -> . NUMBER
     (32) value -> . BOOL
@@ -523,29 +536,33 @@ state 39
     (17) or_cond -> . and_cond
     (18) and_cond -> . cond AND and_cond
     (19) and_cond -> . cond
-    (20) cond -> . STR pred value
+    (20) cond -> . attr pred value
+    (13) attr -> . STR
 
-    STR             shift and go to state 29
+    STR             shift and go to state 14
 
     and_cond                       shift and go to state 27
     or_cond                        shift and go to state 52
     cond                           shift and go to state 28
+    attr                           shift and go to state 29
 
 state 40
 
     (18) and_cond -> cond AND . and_cond
     (18) and_cond -> . cond AND and_cond
     (19) and_cond -> . cond
-    (20) cond -> . STR pred value
+    (20) cond -> . attr pred value
+    (13) attr -> . STR
 
-    STR             shift and go to state 29
+    STR             shift and go to state 14
 
     cond                           shift and go to state 28
     and_cond                       shift and go to state 53
+    attr                           shift and go to state 29
 
 state 41
 
-    (20) cond -> STR pred . value
+    (20) cond -> attr pred . value
     (30) value -> . STR
     (31) value -> . NUMBER
     (32) value -> . BOOL
@@ -645,11 +662,11 @@ state 50
 
 state 51
 
-    (35) assg -> STR EQ value .
+    (35) assg -> attr EQ value .
 
-    COMMA           reduce using rule 35 (assg -> STR EQ value .)
-    WHERE           reduce using rule 35 (assg -> STR EQ value .)
-    $end            reduce using rule 35 (assg -> STR EQ value .)
+    COMMA           reduce using rule 35 (assg -> attr EQ value .)
+    WHERE           reduce using rule 35 (assg -> attr EQ value .)
+    $end            reduce using rule 35 (assg -> attr EQ value .)
 
 
 state 52
@@ -669,11 +686,11 @@ state 53
 
 state 54
 
-    (20) cond -> STR pred value .
+    (20) cond -> attr pred value .
 
-    AND             reduce using rule 20 (cond -> STR pred value .)
-    OR              reduce using rule 20 (cond -> STR pred value .)
-    $end            reduce using rule 20 (cond -> STR pred value .)
+    AND             reduce using rule 20 (cond -> attr pred value .)
+    OR              reduce using rule 20 (cond -> attr pred value .)
+    $end            reduce using rule 20 (cond -> attr pred value .)
 
 
 state 55

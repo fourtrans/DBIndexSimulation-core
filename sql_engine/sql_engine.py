@@ -95,13 +95,17 @@ class SqlEngine(object):
                         | insert_stam
                         | update_stam
                         | delete_stam'''
-            # TODO 生成SQL语句
             print('生成SQL语句')
+            p[0] = p[1]
 
         def p_select_stam(p):
             '''select_stam : SELECT attr_list cond_stam'''
-            # TODO 生成查询语句
             print('生成查询语句')
+            p[0] = [
+                Code(opc='locate', opr=p[3]),
+                Code(opc='query', opr=None),
+                Code(opc='project', opr=p[2])
+            ]
 
         def p_insert_stam(p):
             '''insert_stam : INSERT attr_list VALUES values_list'''
@@ -110,50 +114,83 @@ class SqlEngine(object):
 
         def p_update_stam(p):
             '''update_stam : UPDATE SET assg_stam cond_stam'''
-            # TODO 生成更新语句
             print('生成更新语句')
+            p[0] = [
+                Code(opc='locate', opr=p[4]),
+                Code(opc='update', opr=dict(p[3]))
+            ]
 
         def p_delete_stam(p):
             '''delete_stam : DELETE cond_stam'''
-            # TODO 生成删除语句
             print('生成删除语句')
+            p[0] = [
+                Code(opc='locate', opr=p[2]),
+                Code(opc='delete', opr=None)
+            ]
 
         def p_attr_list(p):
             '''attr_list : attr COMMA attr_list
                          | attr
                          | STAR
                          | empty'''
-            # TODO 生成投影属性列表
             print('生成投影属性列表')
+            if p[1] == '*':
+                """attr_list : STAR"""
+                p[0] = list(range(len(self.attr_index_map)))
+            elif p[1] is None:
+                """attr_list : empty"""
+                p[0] = None
+            elif isinstance(p[1], int):
+                if len(p) == 4:
+                    """attr_list : attr COMMA attr_list"""
+                    p[0] = p[3].append(p[1])
+                else:
+                    p[0] = [p[1]]
 
         def p_attr(p):
             '''attr : STR'''
-            # TODO 获取属性名称
             print('获取属性名称')
+            if p[1] in self.attr_index_map.keys():
+                p[0] = self.attr_index_map[p[1]]
+            else:
+                raise SqlColumnException('属性' + p[1] + '不存在！')
 
         def p_cond_stam(p):
             '''cond_stam : WHERE or_cond
                          | empty'''
-            # TODO 生成条件表达式
             print('生成条件表达式')
+            if len(p) == 2:
+                p[0] = []
+            else:
+                p[0] = p[2]
 
         def p_or_cond(p):
             '''or_cond : and_cond OR or_cond
                        | and_cond'''
-            # TODO 生成含或项的复合逻辑表达式
             print('生成含或项的复合逻辑表达式')
+            if len(p) == 4:
+                p[0] = p[3].append(p[1])
+            else:
+                p[0] = [p[1]]
 
         def p_and_cond(p):
             '''and_cond : cond AND and_cond
                         | cond'''
-            # TODO 生成含与项的复合逻辑表达式
             print('生成含与项的复合逻辑表达式')
+            if len(p) == 4:
+                p[0] = p[3].append(p[1])
+            else:
+                p[0] = [p[1]]
 
         def p_cond(p):
-            '''cond : STR pred value'''
-            # TODO 生成元逻辑表达式
+            '''cond : attr pred value'''
             print('生成元逻辑表达式')
-            p[0] = 'cond test'
+            pattern = self.table_definition[p[1]]['type']
+            value = str(type(p[3]))
+            if re.search(pattern, value):
+                p[0] = (p[1], p[2], p[3])
+            else:
+                raise ValueInvalidException(p[1] + '和' + p[3] + '类型不匹配！')
 
         def p_pred(p):
             '''pred : EQ
@@ -163,38 +200,53 @@ class SqlEngine(object):
  	                | GT
  	                | GE
  	                | LIKE'''
-            # TODO 获取谓词
             print('获取谓词')
+            if re.match('[Ll][Ii][Kk][Ee]', p[1]):
+                p[0] = 'LIKE'
+            else:
+                p[0] = p[1]
 
         def p_values_list(p):
             '''values_list : value COMMA values_list
  	                       | value'''
-            # TODO 生成值列表，插入时使用
             print('生成值列表，插入时使用')
+            if len(p) == 4:
+                p[0] = p[3].append(p[1])
+            else:
+                p[0] = [p[1]]
 
         def p_value(p):
             '''value : STR
  	                 | NUMBER
  	                 | BOOL'''
-            # TODO 取值
             print('取值')
+            p[0] = p[1]
 
         def p_assg_stam(p):
             '''assg_stam : assg COMMA assg_stam
  	                     | assg'''
-            # TODO 合并赋值表达式，更新时使用
             print('合并赋值表达式，更新时使用')
+            if len(p) == 4:
+                p[0] = p[3].append(p[1])
+            else:
+                p[0] = [p[1]]
 
         def p_assg(p):
-            '''assg : STR EQ value'''
-            # TODO 将给定值绑定到指定属性上
+            '''assg : attr EQ value'''
             print('将给定值绑定到指定属性上')
+            pattern = self.table_definition[p[1]]['type']
+            value = str(type(p[3]))
+            if re.search(pattern, value):
+                p[0] = (p[1], p[3])
+            else:
+                raise ValueInvalidException(p[1] + '和' + p[3] + '类型不匹配！')
 
         def p_empty(p):
             'empty :'
             print('空产生式')
+
         def p_error(p):
-            print('error')
+            raise SqlSyntaxException('语法解析错误！')
 
         yaccer = yacc.yacc()
         # yaccer.parse(lexer=lexer)

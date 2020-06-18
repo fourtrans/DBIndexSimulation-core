@@ -79,7 +79,17 @@ class Test_SqlEngine_yacc(unittest.TestCase):
 
     def test_gen_yacc_sample3(self):
         sample = "SELECT * WHERE Sno > 1 and name ='JackSon Li' and cno <> 3 OR name <> ''"
+        out = [Code(opc='locate', opr=None),
+               Code(opc='query', opr=None),
+               Code(opc='project', opr=None)]
+        out[0].opr = [[('Sno', '>', 1),
+                       ('name', '=', 'JackSon Li'),
+                       ('cno', '<>', 3)],
+                      [('name', '<>', '')]]
+        out[1].opr = [0, 1, 2, 3]
+        print(self.engine.attr_index_map)
         self.parser.parse(input=sample, lexer=self.lexer)
+
 
 if __name__ == '__main__':
     unittest.main()
