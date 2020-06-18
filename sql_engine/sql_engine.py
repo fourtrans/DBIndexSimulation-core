@@ -143,7 +143,7 @@ class SqlEngine(object):
             elif isinstance(p[1], int):
                 if len(p) == 4:
                     """attr_list : attr COMMA attr_list"""
-                    p[0] = p[3].append(p[1])
+                    p[0] = p[3] + [p[1]]
                 else:
                     p[0] = [p[1]]
 
@@ -163,13 +163,17 @@ class SqlEngine(object):
                 p[0] = []
             else:
                 p[0] = p[2]
+                for i in p[0]:
+                    # i.sort(key=lambda x: x[2])
+                    # i.sort(key=lambda x: x[1])
+                    i.sort(key=lambda x: x[0])
 
         def p_or_cond(p):
             '''or_cond : and_cond OR or_cond
                        | and_cond'''
             print('生成含或项的复合逻辑表达式')
             if len(p) == 4:
-                p[0] = p[3].append(p[1])
+                p[0] = p[3] + [p[1]]
             else:
                 p[0] = [p[1]]
 
@@ -178,7 +182,9 @@ class SqlEngine(object):
                         | cond'''
             print('生成含与项的复合逻辑表达式')
             if len(p) == 4:
-                p[0] = p[3].append(p[1])
+                print(p[0], p[1], p[2], p[3])
+                p[0] = p[3] + [p[1]]
+                print(p[3])
             else:
                 p[0] = [p[1]]
 
@@ -211,7 +217,7 @@ class SqlEngine(object):
  	                       | value'''
             print('生成值列表，插入时使用')
             if len(p) == 4:
-                p[0] = p[3].append(p[1])
+                p[0] = p[3] + [p[1]]
             else:
                 p[0] = [p[1]]
 
@@ -227,7 +233,7 @@ class SqlEngine(object):
  	                     | assg'''
             print('合并赋值表达式，更新时使用')
             if len(p) == 4:
-                p[0] = p[3].append(p[1])
+                p[0] = p[3] + [p[1]]
             else:
                 p[0] = [p[1]]
 
