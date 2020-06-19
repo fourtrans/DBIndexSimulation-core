@@ -27,9 +27,11 @@ class SqlEngine(object):
         # create attr -> index
         for key in table_definition.keys():
             self.attr_index_map[table_definition[key]['name']] = key
+        self.lexer, tokens = self.gen_lex()
+        self.parser = self.gen_yacc(self.lexer, tokens)
 
     def resolve_sql_expr(self, sql_expr: str) -> List[Code]:
-        pass
+        return self.parser.parse(sql_expr)
 
     def gen_lex(self):
         # reserved keyword or operator

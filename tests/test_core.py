@@ -294,7 +294,7 @@ class Test_SqlVm(unittest.TestCase):
                  Code(opc='update', opr=None)]
         codes[0].opr = [[(2, '=', 'JackSon Li'), (2, '<>', '')],
                         [(1, '<>', 3)]]
-        codes[1].opr = {3: '95'}
+        codes[1].opr = {3: 95}
         vmResult = self.vm.run(codes, self.db)
         self.assertTrue(vmResult['is_success'])
         seq = self.db.call_seq
@@ -303,7 +303,7 @@ class Test_SqlVm(unittest.TestCase):
         self.assertEqual(('locate', 2, '=', 'JackSon Li'), seq[1])
         self.assertEqual(('locate', 2, '<>', ''), seq[2])
         self.assertEqual(('locate', 1, '<>', 3), seq[3])
-        self.assertEqual(('update', {3: '95'}, [1, 3, 5, 7, 9]), self.db.call_seq[4])
+        self.assertEqual(('update', {3: 95}, [1, 3, 5, 7, 9]), self.db.call_seq[4])
 
 
 if __name__ == '__main__':
