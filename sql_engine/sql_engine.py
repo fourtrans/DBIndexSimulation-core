@@ -109,8 +109,24 @@ class SqlEngine(object):
 
         def p_insert_stam(p):
             '''insert_stam : INSERT attr_list VALUES values_list'''
-            # TODO 生成插入语句
             print('生成插入语句')
+            if len(p[2]) != len(p[4]):
+                # 检查属性列表和值列表数量是否一致
+                raise SqlSyntaxException('属性列表和值列表数量不一致！')
+            temp = [None for i in range(len(self.table_definition))]
+            for i in range(len(p[2])):
+                # 检查属性列表和值列表对应位数据类型是否匹配，顺便给临时列表赋值
+                pattern = self.table_definition[p[2][i]]['type']
+                value = str(type(p[4][i]))
+                if re.search(pattern, value):
+                    temp[p[2][i]] = p[4][i]
+                else:
+                    raise ValueInvalidException(p[2][i] + '和' + p[4][i] + '类型不匹配！')
+            for i in range(len(p[2])):
+                # 再次检查是否允许为空
+                if temp[p[2][i]] is None and not self.table_definition[p[2][i]]['is_nullable']:
+                    raise SqlColumnException('字段' + p[2][i]['name'] + '不允许为空！')
+            p[0] = [Code(opc='insert', opr=tuple(temp))]
 
         def p_update_stam(p):
             '''update_stam : UPDATE SET assg_stam cond_stam'''
