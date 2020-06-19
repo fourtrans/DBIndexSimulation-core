@@ -91,18 +91,18 @@ class SqlEngine(object):
 
         return lex.lex(), tokens
 
-    def gen_yacc(self, lexer, tokens: list):
+    def gen_yacc(self, lexer, tokens: list, debug_print=False):
         def p_sql_stam(p):
             '''sql_stam : select_stam
                         | insert_stam
                         | update_stam
                         | delete_stam'''
-            print('生成SQL语句')
+            if debug_print: print('生成SQL语句')
             p[0] = p[1]
 
         def p_select_stam(p):
             '''select_stam : SELECT attr_list cond_stam'''
-            print('生成查询语句')
+            if debug_print: print('生成查询语句')
             p[0] = [
                 Code(opc='locate', opr=p[3]),
                 Code(opc='query', opr=None),
@@ -111,7 +111,7 @@ class SqlEngine(object):
 
         def p_insert_stam(p):
             '''insert_stam : INSERT attr_list VALUES values_list'''
-            print('生成插入语句')
+            if debug_print: print('生成插入语句')
             if len(p[2]) != len(p[4]):
                 # 检查属性列表和值列表数量是否一致
                 raise SqlSyntaxException('属性列表和值列表数量不一致！')
@@ -132,7 +132,7 @@ class SqlEngine(object):
 
         def p_update_stam(p):
             '''update_stam : UPDATE SET assg_stam cond_stam'''
-            print('生成更新语句')
+            if debug_print: print('生成更新语句')
             p[0] = [
                 Code(opc='locate', opr=p[4]),
                 Code(opc='update', opr=dict(p[3]))
@@ -140,7 +140,7 @@ class SqlEngine(object):
 
         def p_delete_stam(p):
             '''delete_stam : DELETE cond_stam'''
-            print('生成删除语句')
+            if debug_print: print('生成删除语句')
             p[0] = [
                 Code(opc='locate', opr=p[2]),
                 Code(opc='delete', opr=None)
@@ -151,7 +151,7 @@ class SqlEngine(object):
                          | attr
                          | STAR
                          | empty'''
-            print('生成投影属性列表')
+            if debug_print: print('生成投影属性列表')
             if p[1] == '*':
                 """attr_list : STAR"""
                 p[0] = list(range(len(self.attr_index_map)))
@@ -167,7 +167,7 @@ class SqlEngine(object):
 
         def p_attr(p):
             '''attr : STR'''
-            print('获取属性名称')
+            if debug_print: print('获取属性名称')
             if p[1] in self.attr_index_map.keys():
                 p[0] = self.attr_index_map[p[1]]
             else:
@@ -176,7 +176,7 @@ class SqlEngine(object):
         def p_cond_stam(p):
             '''cond_stam : WHERE or_cond
                          | empty'''
-            print('生成条件表达式')
+            if debug_print: print('生成条件表达式')
             if len(p) == 2:
                 p[0] = []
             else:
@@ -189,7 +189,7 @@ class SqlEngine(object):
         def p_or_cond(p):
             '''or_cond : and_cond OR or_cond
                        | and_cond'''
-            print('生成含或项的复合逻辑表达式')
+            if debug_print: print('生成含或项的复合逻辑表达式')
             if len(p) == 4:
                 p[0] = p[3] + [p[1]]
             else:
@@ -198,17 +198,17 @@ class SqlEngine(object):
         def p_and_cond(p):
             '''and_cond : cond AND and_cond
                         | cond'''
-            print('生成含与项的复合逻辑表达式')
+            if debug_print: print('生成含与项的复合逻辑表达式')
             if len(p) == 4:
-                print(p[0], p[1], p[2], p[3])
+                if debug_print: print(p[0], p[1], p[2], p[3])
                 p[0] = p[3] + [p[1]]
-                print(p[3])
+                if debug_print: print(p[3])
             else:
                 p[0] = [p[1]]
 
         def p_cond(p):
             '''cond : attr pred value'''
-            print('生成元逻辑表达式')
+            if debug_print: print('生成元逻辑表达式')
             pattern = self.table_definition[p[1]]['type']
             value = str(type(p[3]))
             if re.search(pattern, value):
@@ -224,7 +224,7 @@ class SqlEngine(object):
  	                | GT
  	                | GE
  	                | LIKE'''
-            print('获取谓词')
+            if debug_print: print('获取谓词')
             if re.match('[Ll][Ii][Kk][Ee]', p[1]):
                 p[0] = 'LIKE'
             else:
@@ -233,7 +233,7 @@ class SqlEngine(object):
         def p_values_list(p):
             '''values_list : value COMMA values_list
  	                       | value'''
-            print('生成值列表，插入时使用')
+            if debug_print: print('生成值列表，插入时使用')
             if len(p) == 4:
                 p[0] = p[3] + [p[1]]
             else:
@@ -243,13 +243,13 @@ class SqlEngine(object):
             '''value : STR
  	                 | NUMBER
  	                 | BOOL'''
-            print('取值')
+            if debug_print: print('取值')
             p[0] = p[1]
 
         def p_assg_stam(p):
             '''assg_stam : assg COMMA assg_stam
  	                     | assg'''
-            print('合并赋值表达式，更新时使用')
+            if debug_print: print('合并赋值表达式，更新时使用')
             if len(p) == 4:
                 p[0] = p[3] + [p[1]]
             else:
@@ -257,7 +257,7 @@ class SqlEngine(object):
 
         def p_assg(p):
             '''assg : attr EQ value'''
-            print('将给定值绑定到指定属性上')
+            if debug_print: print('将给定值绑定到指定属性上')
             pattern = self.table_definition[p[1]]['type']
             value = str(type(p[3]))
             if re.search(pattern, value):
@@ -267,7 +267,7 @@ class SqlEngine(object):
 
         def p_empty(p):
             'empty :'
-            print('空产生式')
+            if debug_print: print('空产生式')
 
         def p_error(p):
             raise SqlSyntaxException('语法解析错误！')
