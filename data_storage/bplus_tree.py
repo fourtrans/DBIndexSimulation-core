@@ -33,7 +33,7 @@ class Node(object):
 
 class BPlusTree(object):
     def __init__(self, name: int, order: int = 3):
-        self.table_name_m = name
+        self.tree_name_m = name
         self.root = Node(order)
         self.root.is_leaf = True
 
@@ -299,7 +299,7 @@ class BPlusTree(object):
                 "node_pointer": None,
                 'leaf_value': node.values,
                 'leaf_pointer': node.pointers,
-                'leaf_next_leaf': node.right
+                'leaf_next_leaf': self.dict_structure(node.right)
             }
 
         else:
