@@ -97,7 +97,7 @@ class Test_SqlEngine_yacc(unittest.TestCase):
         self.parser = self.engine.gen_yacc(self.lexer, self.tokens)
 
     def test_gen_yacc_sample1(self):
-        sample = "SELECT  * WHERE Sno > 1 and name ='JackSon Li' Or cno <> 3 and name <> ''"
+        sample = "SELECT  * WHERE sno > 1 and name ='JackSon Li' Or cno <> 3 and name <> ''"
         res = self.parser.parse(input=sample, lexer=self.lexer)
         pass
 
