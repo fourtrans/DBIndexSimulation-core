@@ -299,7 +299,7 @@ class BPlusTree(object):
                 "node_pointer": None,
                 'leaf_value': node.values,
                 'leaf_pointer': node.pointers,
-                'leaf_next_leaf': node.right
+                'leaf_next_leaf': self.dict_structure(node.right)
             }
 
         else:
