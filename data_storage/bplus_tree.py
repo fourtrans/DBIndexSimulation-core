@@ -33,7 +33,7 @@ class Node(object):
 
 class BPlusTree(object):
     def __init__(self, name: int, order: int = 3):
-        self.table_name_m = name
+        self.tree_name_m = name
         self.root = Node(order)
         self.root.is_leaf = True
 
