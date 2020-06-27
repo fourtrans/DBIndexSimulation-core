@@ -18,10 +18,11 @@ class Test_Node(unittest.TestCase):
 class Test_BPlusTree(unittest.TestCase):
     @classmethod
     def setUpClass(self) -> None:
-        self.tree=BPlusTree(name=1,order=3)
+        pass
 
     def test_data_sample1(self):
         #string
+        self.tree = BPlusTree(name=1, order=3)
         sample=["E52","E21","C52","D08","B12","A99"]
         for i,item in enumerate(sample):
             self.tree.insert(value=item,pointer=i)
@@ -31,6 +32,7 @@ class Test_BPlusTree(unittest.TestCase):
 
     def test_data_sample2(self):
         #int
+        self.tree = BPlusTree(name=1, order=3)
         sample=[58,74,81,88,90,92,95]
         for i,item in enumerate(sample):
             self.tree.insert(value=item,pointer=i)
@@ -44,6 +46,7 @@ class Test_BPlusTree(unittest.TestCase):
 
     def test_data_sample3(self):
         #float
+        self.tree = BPlusTree(name=1, order=3)
         sample=[2.9,9.7,19.22,25.15,32.32]
         for i,item in enumerate(sample):
             self.tree.insert(value=item,pointer=i)
