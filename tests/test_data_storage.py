@@ -78,18 +78,19 @@ class Test_DataTable(unittest.TestCase):
     def test_delete(self):
         self.table.delete(0)
         self.assertEqual(self.table.record_m[0], None)
-        self.table.insert(0, ('E22', 'SX01', 'fei', 99))
-        self.assertEqual(self.table.record_m[0], ['E22', 'SX01', 'fei', 99])
+        self.table.insert(0, ('E22', 'SX01', 'chen', 99))
+        self.assertEqual(self.table.record_m[0], ['E22', 'SX01', 'chen', 99])
 
     def test_update(self):
         self.table.update(1, 3, 30)
         self.assertEqual(self.table.record_m[1][3], 30)
 
     def test_get_record(self):
-        self.assertEqual(self.table.get_record(), [['E01', 'SX01', 'fei', 99],
+        self.assertEqual(sorted(self.table.get_record()), sorted([['E22', 'SX01', 'chen', 99],
                                                    ['E02', 'SX01', 'zhang', 89],
                                                    ['E03', 'SX01', 'cai', 79],
-                                                   ['E04', 'SX01', 'zhao', 69]])
+                                                   ['E04', 'SX01', 'zhao', 69],
+                                                   ]))
 
 
 class Test_StorageCoordinator(unittest.TestCase):
@@ -154,12 +155,12 @@ class Test_StorageCoordinator(unittest.TestCase):
         self.assertEqual(sorted(self.storage.locate(1, '<>', 3)), sorted([1, 3, 5, 7, 9]))
 
     def test_locate_all(self):
-        self.storage.delete([1,2,3])
-        self.assertEqual(self.storage.locate_all(),[0,4,5,6,7,8,9,10])
+        self.storage.delete([1,3])
+        self.assertEqual(self.storage.locate_all(),[4,5,6,7,8,9,11])
 
     def test_query(self):
-        anw=self.storage.query([0,2,4])
-        self.assertEqual(anw,[(0, 3, 'Alice', 80),(12, 3, 'Alpha', 85),(14, 3, 'Gamma', 90),])
+        anw=self.storage.query([4,8])
+        self.assertEqual(anw,[(14, 3, 'Gamma', 90),(3, 3, 'Iota', 99)])
 
 
 if __name__ == '__main__':

@@ -111,7 +111,8 @@ class StorageCoordinator(object):
         for i in sub:
             # 先处理索引
             for item in self.bplustree_m:
-                item.delete(i, self.table_m.get_record()[i][item.tree_name_m])
+                if self.table_m.get_record()[i] is not None:
+                    item.delete(i, self.table_m.get_record()[i][item.tree_name_m])
             # 再处理数据表
             self.table_m.delete(i)
             self.empty_m.append(i)
@@ -130,8 +131,9 @@ class StorageCoordinator(object):
                 else:
                     old_record = self.table_m.get_record()
                     for i in old_record:
-                        if i[key] == new_values[key]:
-                            raise NotUniqueException("update error")
+                        if i is not None:
+                            if i[key] == new_values[key]:
+                                raise NotUniqueException("update error")
 
         # 先处理索引
         for tree in self.bplustree_m:
@@ -148,7 +150,8 @@ class StorageCoordinator(object):
     def query(self, sub: List[int]) -> List[tuple]:
         record = []
         for i in sub:
-            record.append(tuple(self.table_m.get_record()[i]))
+            if self.table_m.get_record()[i] is not None:
+                record.append(tuple(self.table_m.get_record()[i]))
         return record
 
     def get_data_definition(self) -> dict:
