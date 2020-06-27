@@ -57,7 +57,7 @@ class StorageCoordinator(object):
         # 对LIKE操作直接使用顺序查找
         # self.bplustree_m[0].show()
         sub = []
-        if compare == "Like":
+        if compare == "LIKE":
             # 对数据表顺序遍历取满足条件的行号index
             z = re.sub(r'%', '.*', value)
             p = re.compile(z)
