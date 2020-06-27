@@ -76,7 +76,7 @@ class SqlEngine(object):
             return t
 
         def t_KEYWORD(t):
-            r'[a-zA-Z]+|\=|\>\=|\<\=|\<\>|\<|\>|\*|,'
+            r'[a-zA-Z_]+|\=|\>\=|\<\=|\<\>|\<|\>|\*|,'
             t.type = reserved.get(t.value.lower(), 'STR')
             return t
 
@@ -161,7 +161,7 @@ class SqlEngine(object):
             elif isinstance(p[1], int):
                 if len(p) == 4:
                     """attr_list : attr COMMA attr_list"""
-                    p[0] = p[3] + [p[1]]
+                    p[0] = [p[1]] + p[3]
                 else:
                     p[0] = [p[1]]
 
@@ -235,7 +235,7 @@ class SqlEngine(object):
  	                       | value'''
             if debug_print: print('生成值列表，插入时使用')
             if len(p) == 4:
-                p[0] = p[3] + [p[1]]
+                p[0] = [p[1]] + p[3]
             else:
                 p[0] = [p[1]]
 
@@ -251,7 +251,7 @@ class SqlEngine(object):
  	                     | assg'''
             if debug_print: print('合并赋值表达式，更新时使用')
             if len(p) == 4:
-                p[0] = p[3] + [p[1]]
+                p[0] = [p[1]] + p[3]
             else:
                 p[0] = [p[1]]
 
