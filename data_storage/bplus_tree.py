@@ -295,17 +295,17 @@ class BPlusTree(object):
         if node.is_leaf:
             dict_set={
                 "type": 'leaf',
-                "node_values": None,
+                "node_value": None,
                 "node_pointer": None,
                 'leaf_value': node.values,
                 'leaf_pointer': node.pointers,
-                'leaf_next_leaf': self.dict_structure(node.right)
+                'leaf_next_leaf': self.dict_structure(node.right) if node.right is not None else None
             }
 
         else:
             dict_set = {
                 "type": 'node',
-                "node_values": node.values,
+                "node_value": node.values,
                 "node_pointer": [self.dict_structure(n) for n in node.pointers],
                 'leaf_value': None,
                 'leaf_pointer': None,
