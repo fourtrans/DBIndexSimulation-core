@@ -1,8 +1,9 @@
 from typing import List, Dict, Tuple, Set
-from .code import Code
 import ply.lex as lex
 import ply.yacc as yacc
 import re
+
+from .code import Code
 
 
 class SqlSyntaxException(Exception):

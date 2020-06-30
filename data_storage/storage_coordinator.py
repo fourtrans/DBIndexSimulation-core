@@ -1,8 +1,9 @@
 from typing import List, Dict, Tuple, Set
-from .bplus_tree import Node, BPlusTree
-from .data_table import DataTable
 from collections import defaultdict
 import re
+
+from .bplus_tree import Node, BPlusTree
+from .data_table import DataTable
 
 
 class NotUniqueException(Exception):

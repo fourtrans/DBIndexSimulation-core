@@ -1,4 +1,5 @@
 import unittest
+
 from core import Core
 
 TABLE_DEFINITION_SAMPLE = {
@@ -245,3 +246,7 @@ class Test_System_Integration_Update(unittest.TestCase):
         self.run_sql("UPDATE SET name='守法良民' WHERE name <> '张三'")
         self.assertEqual(64, len(self.run_sql("SELECT * WHERE name = '守法良民'")['content']))
         self.assertEqual(1, len(self.run_sql("SELECT * WHERE name <> '守法良民'")['content']))
+
+
+if __name__ == '__main__':
+    unittest.main()
