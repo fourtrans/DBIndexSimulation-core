@@ -1,6 +1,7 @@
 from typing import List, Dict, Tuple, Set
 import math
 
+
 class Node(object):
     def __init__(self, order: int):
         self.order = order
@@ -111,7 +112,7 @@ class BPlusTree(object):
         return current_node
 
     def find(self, value, op: str) -> list:  # get the list of pointer whose values is op(<.>,=,<=,>=) vaule
-        #global i, item
+        # global i, item
         leaf = self.search(value)
         addr = []
         if not leaf.values:
@@ -289,23 +290,23 @@ class BPlusTree(object):
                     for j in parentNode.pointers:
                         j.parent = parentNode
 
-    def dict_structure(self,node=0):
-        if node==0:
-            node=self.root
+    def dict_structure(self, node=0):
+        if node == 0:
+            node = self.root
         if node.is_leaf:
-            dict_set={
+            dict_set = {
                 "type": 'leaf',
-                "node_values": None,
+                "node_value": None,
                 "node_pointer": None,
                 'leaf_value': node.values,
                 'leaf_pointer': node.pointers,
-                'leaf_next_leaf': self.dict_structure(node.right)
+                'leaf_next_leaf': self.dict_structure(node.right) if node.right is not None else None
             }
 
         else:
             dict_set = {
                 "type": 'node',
-                "node_values": node.values,
+                "node_value": node.values,
                 "node_pointer": [self.dict_structure(n) for n in node.pointers],
                 'leaf_value': None,
                 'leaf_pointer': None,

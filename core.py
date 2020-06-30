@@ -1,6 +1,7 @@
 from typing import List, Dict, Tuple, Set
-from graphviz import Digraph
+from graphviz import Digraph, nohtml
 from functools import reduce
+
 from sql_engine import SqlEngine, Code
 from sql_engine import SqlSyntaxException, SqlColumnException, ValueInvalidException
 from data_storage import StorageCoordinator
@@ -117,5 +118,85 @@ class Core(object):
         return sql_result
 
     def generate_index_picture(self, output_path: str, attribute: int) -> None:
+        def generate_bplustree_picture(dat: dict, tree_order=3) -> None:
+            nonlocal output_path
+            dot = Digraph(format='png', node_attr={'shape': 'Mrecord'})
+            nodeid2index: Dict[int, int] = {}
+            leaf_index: List[int] = []
+            index_counter = 0
 
-        pass
+            def value_str_short(value, truncate: int = 5):
+                value_str = str(value)
+                if len(value_str) > truncate:
+                    value_str = value_str[:truncate] + '...'
+                return value_str
+
+            def value_list_2htmltab(value_list: list, leaf_pointer: list = [], is_leaf: bool = False):
+                nonlocal tree_order
+                tab_body = ''
+                writed_block = 0
+
+                it = iter(leaf_pointer)
+                for value in value_list:
+                    tab_body += f'<f{str(writed_block)}>'
+                    tab_body += value_str_short(value)
+                    if writed_block != tree_order - 1:
+                        tab_body += '|'
+                    writed_block += 1
+
+                for i in range(tree_order - writed_block):
+                    tab_body += f'<f{str(writed_block)}>'
+                    if writed_block != tree_order - 1:
+                        tab_body += '|'
+                    writed_block += 1
+
+                if is_leaf:
+                    tab_body += nohtml(r'|<next>Next-\>')
+
+                return f'''{{{tab_body}}}'''
+
+            def dfs_traverse(node: dict, father_index: int = None):
+                nonlocal nodeid2index, leaf_index, index_counter
+                nonlocal dot
+                nonlocal tree_order
+
+                # get current node index
+                current_index = 0
+                if id(node) in nodeid2index:
+                    current_index = nodeid2index[id(node)]
+                else:
+                    current_index = index_counter
+                    nodeid2index[id(node)] = current_index  # update index map
+                    index_counter += 1
+
+                # build current node and expand to children
+                if node['type'] == 'node':
+                    dot.attr('node', style='filled', fillcolor='lightblue2', color='black')
+                    dot.node(str(current_index), value_list_2htmltab(node['node_value']))
+                    for child_node in node['node_pointer']:
+                        dfs_traverse(child_node, father_index=current_index)
+                elif node['type'] == 'leaf':
+                    dot.attr('node', style='filled', fillcolor='lightyellow', color='black')
+                    dot.node(str(current_index),
+                             value_list_2htmltab(node['leaf_value'], is_leaf=True, leaf_pointer=node['leaf_pointer']))
+                    leaf_index.append(current_index)
+                else:
+                    raise Exception('InteralError: index tree data is not formatted')
+
+                # add edge to father
+                if father_index is not None:
+                    dot.edge(str(father_index), str(current_index))
+
+            # build tree
+            dfs_traverse(dat)
+
+            # # add edge to next_leaf if this node is leaf
+            # using constraint attribute will make graphviz failed to process, reason unknown
+            # for i in range(len(leaf_index)):
+            #     if i != len(leaf_index) - 1:
+            #         dot.edge(str(leaf_index[i]) + ':next', str(leaf_index[i + 1]), constraint="false")
+
+            dot.render(filename=output_path)
+
+        dat = self.db_m.get_index_structure(attribute)
+        generate_bplustree_picture(dat)

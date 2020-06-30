@@ -1,8 +1,9 @@
 from typing import List, Dict, Tuple, Set
-from .bplus_tree import Node, BPlusTree
-from .data_table import DataTable
 from collections import defaultdict
 import re
+
+from .bplus_tree import Node, BPlusTree
+from .data_table import DataTable
 
 
 class NotUniqueException(Exception):
@@ -57,7 +58,7 @@ class StorageCoordinator(object):
         # 对LIKE操作直接使用顺序查找
         # self.bplustree_m[0].show()
         sub = []
-        if compare == "Like":
+        if compare == "LIKE":
             # 对数据表顺序遍历取满足条件的行号index
             z = re.sub(r'%', '.*', value)
             p = re.compile(z)

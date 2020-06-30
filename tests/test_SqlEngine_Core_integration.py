@@ -1,6 +1,7 @@
 import unittest
 from typing import List, Dict, Tuple, Set
 from functools import reduce
+
 from core import SqlVm, Core
 from sql_engine.code import Code
 from sql_engine.sql_engine import SqlEngine
